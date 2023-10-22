@@ -14,12 +14,12 @@ async def get_data() -> list:
     async with aiofiles.open('bot/app/open.json', mode='r', encoding='utf-8') as file:
         json_text = await file.read()
 
-    rows = json.loads(json_text)
+    if json_text:
+        rows = json.loads(json_text)
 
-    crm_by_dict = {row['CRM']: row for row in rows}
-    items = list(crm_by_dict.values())
-
-    return items
+        crm_by_dict = {row['CRM']: row for row in rows}
+        items = list(crm_by_dict.values())
+        return items
 
 
 async def parse_datetime(date_str) -> datetime:
@@ -170,23 +170,26 @@ async def app_by_city(json_data) -> str:
 async def records() -> list:
     """Фильтрует сырой массив и возвращает отфильтрованный"""
     data_array = await get_data()
-    filtered_array = await filter_api(data_array)
+    if data_array:
+        filtered_array = await filter_api(data_array)
 
-    return filtered_array
+        return filtered_array
 
 
 async def new_lines() -> dict:
     """Отслеживает записи в API"""
     filtered_array = await records()
-    lines = await target_line(filtered_array)
+    if filtered_array:
+        lines = await target_line(filtered_array)
 
-    return lines
+        return lines
 
 
 async def convert_to_excel(format_type):
     """Заносит данные из API в Excel Документ"""
     filtered_array = await records()
-    file_path = await enter_data(format_type, filtered_array)
-    counted_apps = await app_by_city(filtered_array)
+    if filtered_array:
+        file_path = await enter_data(format_type, filtered_array)
+        counted_apps = await app_by_city(filtered_array)
 
-    return file_path, counted_apps
+        return file_path, counted_apps

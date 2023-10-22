@@ -1,11 +1,11 @@
 from datetime import datetime
 
-from bot.database.main import connect_db
+from bot.database.main import connect_pg
 
 
 async def set_notice_mode(user_id: int, notification_key: str) -> None:
     """Устанавливаем уведомления пользователя по отправленной кнопке"""
-    connection = await connect_db()
+    connection = await connect_pg()
     async with connection.transaction():
         # Проверяем наличие данных в таблице
         if notification_key.startswith('bot'):
@@ -104,7 +104,7 @@ async def set_notice_mode(user_id: int, notification_key: str) -> None:
 
 async def disable_all_notice(user_id: int, notification_key: str) -> None:
     """Полностью отключает уведомления по переданному notification_key"""
-    connection = await connect_db()
+    connection = await connect_pg()
     async with connection.transaction():
         if notification_key.startswith('bot'):
             await connection.execute(
@@ -129,7 +129,7 @@ async def disable_all_notice(user_id: int, notification_key: str) -> None:
 
 async def change_user_email(user_id: int, email: str) -> None:
     """Изменяет почту пользователя, если он Диспетчер"""
-    connection = await connect_db()
+    connection = await connect_pg()
     async with connection.transaction():
         await connection.execute(
             """UPDATE users SET email = $1 WHERE user_id = $2""",
@@ -139,7 +139,7 @@ async def change_user_email(user_id: int, email: str) -> None:
 
 async def changer_role(**kwargs) -> None:
     """Меняет роль пользователя"""
-    connection = await connect_db()
+    connection = await connect_pg()
     async with connection.transaction():
         if kwargs['change_role'] == 'to_executor':
             await connection.execute(
@@ -155,7 +155,7 @@ async def changer_role(**kwargs) -> None:
 
 
 async def latest_activity(user_id: int) -> None:
-    connection = await connect_db()
+    connection = await connect_pg()
     current_time = datetime.now()
     async with connection.transaction():
         await connection.execute(
@@ -165,7 +165,7 @@ async def latest_activity(user_id: int) -> None:
 
 
 async def change_array(data) -> None:
-    connection = await connect_db()
+    connection = await connect_pg()
     async with connection.transaction():
         await connection.execute(
             """UPDATE data_table 

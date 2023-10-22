@@ -1,6 +1,6 @@
 from aiogram import F, Router
 from aiogram.types import CallbackQuery
-from aiogram.types import FSInputFile
+from aiogram.types import Message, FSInputFile
 
 from bot.database.methods.update import latest_activity
 
@@ -21,14 +21,7 @@ global file_path, counted_apps
 
 @router.message(F.text == '📥Все')
 async def all_requests(message: types.Message):
-    global file_path, counted_apps  # Объявляем глобальные переменные
-    file_path, counted_apps = await convert_to_excel('all')
-    generated_file = FSInputFile(file_path)
-
-    await message.answer_document(
-        generated_file,
-        reply_markup=btn_app_by_city()
-    )
+    await send_document_by_request('all', message)
 
     await latest_activity(message.from_user.id)  # Записывает время активности
 
@@ -36,17 +29,24 @@ async def all_requests(message: types.Message):
 # Вывод заявок без исполнителя #
 
 @router.message(F.text == '📤Без исполнителя')
-async def non_executor_requests(message: types.Message):
-    global file_path, counted_apps  # Объявляем глобальные переменные
-    file_path, counted_apps = await convert_to_excel('non_executor')
-    generated_file = FSInputFile(file_path)
-
-    await message.answer_document(
-        generated_file,
-        reply_markup=btn_app_by_city()
-    )
+async def non_executor_requests(message: Message):
+    await send_document_by_request('non_executor', message)
 
     await latest_activity(message.from_user.id)  # Записывает время активности
+
+
+async def send_document_by_request(request_type, message: Message) -> None:
+    global file_path, counted_apps
+    try:
+        file_path, counted_apps = await convert_to_excel(request_type)
+        generated_file = FSInputFile(file_path)
+
+        await message.answer_document(
+            generated_file,
+            reply_markup=btn_app_by_city()
+        )
+    except TypeError:
+        await message.answer('⛔️Нет данных для вывода. Пожалуйста, подождите.')
 
 
 # Вывод кол-ва заявок по городам #

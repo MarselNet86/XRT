@@ -1,11 +1,11 @@
 import datetime
 
-from bot.database.main import connect_db
+from bot.database.main import connect_pg
 
 
 async def add_statuses_name() -> None:
     """Добавляет статусы заявок в таблицу при первом запуске бота"""
-    connection = await connect_db()
+    connection = await connect_pg()
 
     # Проверяем наличие данных в таблице
     rows = await connection.fetch(
@@ -30,7 +30,7 @@ async def add_statuses_name() -> None:
 
 async def add_roles_name() -> None:
     """Добавляет роли в таблицу при первом запуске бота"""
-    connection = await connect_db()
+    connection = await connect_pg()
 
     # Проверяем наличие данных в таблице
     rows = await connection.fetch(
@@ -52,7 +52,7 @@ async def add_roles_name() -> None:
 async def add_new_user(**kwargs) -> None:
     """Добавляет нового пользователя в таблицу users,
     если его не существует"""
-    connection = await connect_db()
+    connection = await connect_pg()
     async with connection.transaction():
         await connection.execute(
             """INSERT INTO users 
@@ -76,7 +76,7 @@ async def add_new_user(**kwargs) -> None:
 
 
 async def insert_new_array(data) -> None:
-    connection = await connect_db()
+    connection = await connect_pg()
     async with connection.transaction():
         await connection.execute(
             """

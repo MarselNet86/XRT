@@ -1,9 +1,9 @@
-from .main import connect_db
+from .main import connect_pg
 
 
 async def create_statuses() -> None:
     """Статусы наименования заявок"""
-    connection = await connect_db()
+    connection = await connect_pg()
     async with connection.transaction():
         await connection.execute("""
             CREATE TABLE IF NOT EXISTS statuses (
@@ -15,7 +15,7 @@ async def create_statuses() -> None:
 
 async def create_data_array() -> None:
     """Массив данных"""
-    connection = await connect_db()
+    connection = await connect_pg()
     async with connection.transaction():
         await connection.execute("""      
             CREATE TABLE IF NOT EXISTS data_table (
@@ -39,12 +39,12 @@ async def create_data_array() -> None:
             );   
             """)
 
-    print('[INFO] Table - {data_array} created successfully')
+    print('[INFO] Table - {data_table} created successfully')
 
 
 async def create_roles() -> None:
     """Пользовательские роли"""
-    connection = await connect_db()
+    connection = await connect_pg()
     async with connection.transaction():
         await connection.execute("""
             CREATE TABLE IF NOT EXISTS roles (
@@ -58,7 +58,7 @@ async def create_roles() -> None:
 
 async def create_users() -> None:
     """Основная информация о пользователе"""
-    connection = await connect_db()
+    connection = await connect_pg()
     async with connection.transaction():
         await connection.execute("""   
             CREATE TABLE IF NOT EXISTS users (
@@ -79,7 +79,7 @@ async def create_users() -> None:
 
 async def create_notification_modes() -> None:
     """Настройки уведомлений пользователя"""
-    connection = await connect_db()
+    connection = await connect_pg()
     async with connection.transaction():
         await connection.execute("""   
             CREATE TABLE IF NOT EXISTS notification_modes (

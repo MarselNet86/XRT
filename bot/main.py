@@ -9,7 +9,10 @@ from bot.misc.config import TgKeys
 from bot.handlers.user import default_commands
 from bot.handlers.user import applications, notifications, private_office, unknown_commands, help
 from bot.handlers.user.register import main_register, continue_dispatcher, continue_executor
-from bot.handlers.user.utils import sniper_bot
+
+from bot.app.sniper import repeat_request
+from bot.handlers.user.utils import sender_notice
+
 from bot.handlers.admin import panel
 
 from bot.database.models import *
@@ -71,7 +74,8 @@ async def start_bot() -> None:
     dp.include_router(unknown_commands.router)
 
     try:
-        asyncio.create_task(sniper_bot())
+        asyncio.create_task(repeat_request())
+        asyncio.create_task(sender_notice())
 
         await bot.delete_webhook(drop_pending_updates=True)
         await dp.start_polling(bot)

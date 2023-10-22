@@ -1,6 +1,6 @@
+import asyncio
 from datetime import datetime, timedelta, timezone
 from os import getenv
-import asyncio
 import requests
 
 from aiogram.types import CallbackQuery
@@ -58,11 +58,12 @@ async def generate_message_text(line):
     return caption, fields
 
 
-async def sniper_bot() -> None:
+async def sender_notice() -> None:
     while True:
         try:
+            await asyncio.sleep(60)
             line = await new_lines()
-            if line:
+            if line and getenv('SEND_NOTIFICATION') == 'ON':
                 caption, message = await generate_message_text(line)
                 notifications = await get_notifications_info()
                 modes = [dict(notice) for notice in notifications]
